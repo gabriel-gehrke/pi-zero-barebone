@@ -1,5 +1,4 @@
 .arm
-
 .text
 
 .global delay

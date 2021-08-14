@@ -1,5 +1,4 @@
 #pragma once
-#include "common.h"
 
 #define PAGE_SHIFT 12
 #define TABLE_SHIFT 9
@@ -12,6 +11,7 @@
 
 #ifndef __ASSEMBLER__
 
+#include "common.h"
 void memzero (u32 addr, u32 n);
 
 #endif
