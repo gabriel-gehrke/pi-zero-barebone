@@ -1,6 +1,9 @@
 # VS Code Server
 .vscode
 
+# ignore build folder
+build
+
 # Prerequisites
 *.d
 
