@@ -6,14 +6,13 @@
 memzero:
     cmp r1, #0
     bxeq lr @ return if r1 is zero. (can not be smaller because input is unsigned)
-
-    eor r2, r2, r2 @ clear r2 with xor
-    add r3, r0, r1 @ calculate end address
+    mov r2, #0 @ load 0 into r2
+    b memzero_loop
     
 memzero_loop:
     strb r2, [r0], #1 @ write zero, increment register afterwards
-    cmp r0, r3 @ loop if less than end address
-    bls memzero_loop
+    subs r1, r1, #1 @ decrement counter
+    bne memzero_loop @ loop if not zero
 
     bx lr
 

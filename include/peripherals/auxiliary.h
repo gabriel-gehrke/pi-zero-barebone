@@ -16,7 +16,7 @@ struct AuxiliaryRegisters {
     reg32 mu_scratch;
     reg32 mu_control;
     reg32 mu_status;
-    reg32 mu_baudrate;
+    reg32 mu_baud_rate;
 };
 
 #define AUX_REGS ((struct AuxiliaryRegisters *) PBASE + 0x00215000)

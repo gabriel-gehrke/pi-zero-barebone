@@ -1,8 +1,8 @@
 BOOTMNT ?= /media/parallels/boot
 
-CC = gcc
-COPS = -Wall -g -O0 -nostdlib -nostartfiles -ffreestanding -Iinclude -mgeneral-regs-only \
-		-mfpu=vfp -mfloat-abi=hard -march=armv6 -marm
+CC = arm-none-eabi
+COPS = -Wall -O2 -nostdlib -nostartfiles -ffreestanding -Iinclude -mgeneral-regs-only \
+		-march=armv6+fp -marm
 
 ASMOPS = -Iinclude
 
@@ -16,11 +16,11 @@ clean:
 
 $(BUILD_DIR)/%_c.o: $(SRC_DIR)/%.c
 	mkdir -p $(@D)
-	$(CC) $(COPS) -MMD -c $< -o $@
+	$(CC)-gcc $(COPS) -MMD -c $< -o $@
 
 $(BUILD_DIR)/%_s.o: $(SRC_DIR)/%.S
 	mkdir -p $(@D)
-	$(CC) $(COPS) -MMD -c $< -o $@
+	$(CC)-gcc $(COPS) -MMD -c $< -o $@
 
 C_FILES = $(wildcard $(SRC_DIR)/*.c)
 ASM_FILES = $(wildcard $(SRC_DIR)/*.S)
@@ -32,11 +32,12 @@ DEP_FILES = $(OBJ_FILES:%.o=%.d)
 
 
 kernel8.img: $(SRC_DIR)/linker.ld $(OBJ_FILES)
+	@echo ""
 	@echo "Building Raspberry Pi Zero bare metal OS..."
 	@echo ""
 
-	ld -T $(SRC_DIR)/linker.ld -o $(BUILD_DIR)/kernel8.elf $(OBJ_FILES)
-	objcopy $(BUILD_DIR)/kernel8.elf -O binary $(BUILD_DIR)/kernel8.img
+	$(CC)-ld -T $(SRC_DIR)/linker.ld -o $(BUILD_DIR)/kernel.elf $(OBJ_FILES)
+	$(CC)-objcopy $(BUILD_DIR)/kernel.elf -O binary $(BUILD_DIR)/kernel.img
 
 	rm -rf $(BUILD_DIR)/config.txt
 	cp config.txt $(BUILD_DIR)/config.txt

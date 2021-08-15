@@ -19,16 +19,18 @@ void uart_init() {
     AUX_REGS->mu_lcr = 3; // 8 bit mode
     AUX_REGS->mu_mcr = 0;
 
-    AUX_REGS->mu_baudrate = 270; // = 115200 @ 250 Mhz
+    AUX_REGS->mu_baud_rate = 270; // = 115200 @ 250 Mhz
 
     AUX_REGS->mu_control = 3;
 
-    uart_send('\r');
     uart_send('\n');
     uart_send('\n');
 }
 
 void uart_send(char c) {
+
+    if (c == '\n') uart_send('\r');
+
     // wait until transmitter empty
     while(!(AUX_REGS->mu_lsr & 0x20));
 
@@ -44,10 +46,6 @@ char uart_recv() {
 
 void uart_print(char* str) {
     while(*str) {
-        if (*str == '\n') {
-            uart_send('\r');
-        }
-
         uart_send(*str);
         str++;
     }

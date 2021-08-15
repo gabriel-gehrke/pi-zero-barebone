@@ -5,5 +5,9 @@ void kernel_main() {
     uart_init();
     uart_print("Raspberry Pi Zero Bare Metal OS Initializing...\n");
 
-    uart_print("Done!\n");
+    uart_print("\n\nDone!\n");
+
+    while (1) {
+        uart_send(uart_recv());
+    }
 }
