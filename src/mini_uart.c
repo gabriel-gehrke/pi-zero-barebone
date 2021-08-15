@@ -4,24 +4,25 @@
 #include "peripherals/auxiliary.h"
 #include "mini_uart.h"
 
-#define TXD 15
+#define TXD 14
 #define RXD 15
 
 void uart_init() {
-    gpio_pin_set_func(TXD, ALT5);
-    gpio_pin_set_func(RXD, ALT5);
-    gpio_pin_enable(TXD);
-    gpio_pin_enable(RXD);
-
     AUX_REGS->enables = 1;
-    AUX_REGS->mu_control = 0;
     AUX_REGS->mu_ier = 0;
+    AUX_REGS->mu_control = 0;
     AUX_REGS->mu_lcr = 3; // 8 bit mode
     AUX_REGS->mu_mcr = 0;
-
+    AUX_REGS->mu_ier = 0;
+    AUX_REGS->mu_iir = 0xC6;
     AUX_REGS->mu_baud_rate = 270; // = 115200 @ 250 Mhz
-
-    AUX_REGS->mu_control = 3;
+    
+    gpio_pin_set_func(TXD, ALT5);
+    gpio_pin_set_func(RXD, ALT5);
+    //gpio_pin_enable(TXD);
+    //gpio_pin_enable(RXD);
+    
+    AUX_REGS->mu_control = 2;
 
     uart_send('\n');
     uart_send('\n');

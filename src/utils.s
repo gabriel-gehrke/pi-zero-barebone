@@ -1,6 +1,3 @@
-.arm
-.text
-
 .global delay
 delay:
     subs r0, r0, #1

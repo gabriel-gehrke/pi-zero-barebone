@@ -1,6 +1,3 @@
-.arm
-.text
-
 /* r0: start address; r1: number of bytes to overwrite with 0 */
 .global memzero
 memzero:

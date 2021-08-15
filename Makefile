@@ -1,15 +1,15 @@
 BOOTMNT ?= /media/parallels/boot
 
 CC = arm-none-eabi
-COPS = -Wall -O2 -nostdlib -nostartfiles -ffreestanding -Iinclude -mgeneral-regs-only \
-		-march=armv6+fp -marm
+COPS = -Wall -Werror -O1 -nostdlib -nostartfiles -ffreestanding -Iinclude \
+		 -marm
 
-ASMOPS = -Iinclude
+AOPS = -Iinclude --warn --fatal-warnings
 
 BUILD_DIR = build
 SRC_DIR = src
 
-all: kernel8.img
+all: kernel.img
 
 clean:
 	rm -rf $(BUILD_DIR) *.img *.elf
@@ -18,27 +18,24 @@ $(BUILD_DIR)/%_c.o: $(SRC_DIR)/%.c
 	mkdir -p $(@D)
 	$(CC)-gcc $(COPS) -MMD -c $< -o $@
 
-$(BUILD_DIR)/%_s.o: $(SRC_DIR)/%.S
+$(BUILD_DIR)/%_s.o: $(SRC_DIR)/%.s
 	mkdir -p $(@D)
-	$(CC)-gcc $(COPS) -MMD -c $< -o $@
+	$(CC)-as $(AOPS) -MMD -c $< -o $@
 
 C_FILES = $(wildcard $(SRC_DIR)/*.c)
-ASM_FILES = $(wildcard $(SRC_DIR)/*.S)
+ASM_FILES = $(wildcard $(SRC_DIR)/*.s)
 OBJ_FILES = $(C_FILES:$(SRC_DIR)/%.c=$(BUILD_DIR)/%_c.o)
-OBJ_FILES += $(ASM_FILES:$(SRC_DIR)/%.S=$(BUILD_DIR)/%_s.o)
+OBJ_FILES += $(ASM_FILES:$(SRC_DIR)/%.s=$(BUILD_DIR)/%_s.o)
 
 DEP_FILES = $(OBJ_FILES:%.o=%.d)
 -include $(DEP_FILES)
 
+kernel.elf: $(SRC_DIR)/memmap $(OBJ_FILES)
+	@echo "Building kernel.elf..."
+	$(CC)-ld -T $(SRC_DIR)/memmap -o $(BUILD_DIR)/kernel.elf $(OBJ_FILES)
 
-kernel8.img: $(SRC_DIR)/linker.ld $(OBJ_FILES)
-	@echo ""
-	@echo "Building Raspberry Pi Zero bare metal OS..."
-	@echo ""
-
-	$(CC)-ld -T $(SRC_DIR)/linker.ld -o $(BUILD_DIR)/kernel.elf $(OBJ_FILES)
+kernel.img: kernel.elf
+	@echo "Exporting image..."
+	$(CC)-objcopy --srec-forceS3 $(BUILD_DIR)/kernel.elf -O srec $(BUILD_DIR)/kernel.srec
 	$(CC)-objcopy $(BUILD_DIR)/kernel.elf -O binary $(BUILD_DIR)/kernel.img
-
-	rm -rf $(BUILD_DIR)/config.txt
-	cp config.txt $(BUILD_DIR)/config.txt
 	sync
