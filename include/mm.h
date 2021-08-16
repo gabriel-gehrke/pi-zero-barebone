@@ -1,5 +1,7 @@
 #pragma once
 
+#define LOW_MEMORY 0x8000
+
 #ifndef __ASSEMBLER__
 
 #include "common.h"

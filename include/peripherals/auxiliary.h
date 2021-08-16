@@ -19,4 +19,4 @@ struct AuxiliaryRegisters {
     reg32 mu_baud_rate;
 };
 
-#define AUX_REGS ((struct AuxiliaryRegisters *) PBASE + 0x00215000)
+#define AUX_REGS ((struct AuxiliaryRegisters *)(PBASE + 0x00215000))

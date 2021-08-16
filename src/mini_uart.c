@@ -1,4 +1,3 @@
-#include "common.h"
 #include "gpio.h"
 #include "utils.h"
 #include "peripherals/auxiliary.h"
@@ -8,29 +7,34 @@
 #define RXD 15
 
 void uart_init() {
-    AUX_REGS->enables = 1;
-    AUX_REGS->mu_ier = 0;
-    AUX_REGS->mu_control = 0;
-    AUX_REGS->mu_lcr = 3; // 8 bit mode
-    AUX_REGS->mu_mcr = 0;
-    AUX_REGS->mu_ier = 0;
-    AUX_REGS->mu_iir = 0xC6;
-    AUX_REGS->mu_baud_rate = 270; // = 115200 @ 250 Mhz
-    
     gpio_pin_set_func(TXD, ALT5);
     gpio_pin_set_func(RXD, ALT5);
-    //gpio_pin_enable(TXD);
-    //gpio_pin_enable(RXD);
-    
-    AUX_REGS->mu_control = 2;
 
+    gpio_pin_enable(TXD);
+    gpio_pin_enable(RXD);
+
+    AUX_REGS->enables = 1;
+    AUX_REGS->mu_control = 0;
+    AUX_REGS->mu_ier = 0;
+    AUX_REGS->mu_lcr = 3;
+    AUX_REGS->mu_mcr = 0;
+
+    AUX_REGS->mu_baud_rate = 270; // = 115200 @ 250 Mhz
+
+    AUX_REGS->mu_control = 3;
+
+    uart_send('\r');
     uart_send('\n');
     uart_send('\n');
 }
 
 void uart_send(char c) {
 
-    if (c == '\n') uart_send('\r');
+    /*
+    if (c == '\n') {
+        uart_send('\r');
+    }
+    */
 
     // wait until transmitter empty
     while(!(AUX_REGS->mu_lsr & 0x20));
@@ -45,8 +49,12 @@ char uart_recv() {
     return AUX_REGS->mu_io & 0xFF;
 }
 
-void uart_print(char* str) {
+void uart_print(const char* str) {
     while(*str) {
+        if (*str == '\n') {
+            uart_send('\r');
+        }
+
         uart_send(*str);
         str++;
     }
