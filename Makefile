@@ -1,8 +1,8 @@
 BOOTMNT ?= /media/parallels/boot
 
-CC = arm-none-eabi
+CC = gcc
 COPS = -Wall -Werror -O1 -nostdlib -nostartfiles -ffreestanding -Iinclude \
-		 -marm
+		 -marm -mcpu=arm1176jzf-s
 
 AOPS = -Iinclude --warn --fatal-warnings
 
@@ -16,15 +16,15 @@ clean:
 
 $(BUILD_DIR)/%_c.o: $(SRC_DIR)/%.c
 	mkdir -p $(@D)
-	$(CC)-gcc $(COPS) -MMD -c $< -o $@
+	$(CC) $(COPS) -MMD -c $< -o $@
 
 $(BUILD_DIR)/%_S.o: $(SRC_DIR)/%.S
 	mkdir -p $(@D)
-	$(CC)-gcc $(COPS) -MMD -c $< -o $@
+	$(CC) $(COPS) -MMD -c $< -o $@
 
 $(BUILD_DIR)/%_s.o: $(SRC_DIR)/%.s
 	mkdir -p $(@D)
-	$(CC)-as $(AOPS) -MMD -c $< -o $@
+	as $(AOPS) -MMD -c $< -o $@
 
 C_FILES = $(wildcard $(SRC_DIR)/*.c)
 ASM_FILES = $(wildcard $(SRC_DIR)/*.s)
@@ -39,10 +39,9 @@ DEP_FILES = $(OBJ_FILES:%.o=%.d)
 
 kernel.elf: $(SRC_DIR)/linker.ld $(OBJ_FILES)
 	@echo "Building kernel.elf..."
-	$(CC)-ld -T $(SRC_DIR)/linker.ld -o $(BUILD_DIR)/kernel.elf $(OBJ_FILES)
+	ld -T $(SRC_DIR)/linker.ld -o $(BUILD_DIR)/kernel.elf $(OBJ_FILES)
 
 kernel.img: kernel.elf
 	@echo "Exporting image..."
-	$(CC)-objcopy --srec-forceS3 $(BUILD_DIR)/kernel.elf -O srec $(BUILD_DIR)/kernel.srec
-	$(CC)-objcopy $(BUILD_DIR)/kernel.elf -O binary $(BUILD_DIR)/kernel.img
+	objcopy $(BUILD_DIR)/kernel.elf -O binary $(BUILD_DIR)/kernel.img
 	sync

@@ -30,16 +30,11 @@ void uart_init() {
 
 void uart_send(char c) {
 
-    /*
-    if (c == '\n') {
-        uart_send('\r');
-    }
-    */
-
     // wait until transmitter empty
     while(!(AUX_REGS->mu_lsr & 0x20));
 
-    AUX_REGS->mu_io = c;
+    AUX_REGS->mu_io = (u8)c;
+    delay(100000);
 }
 
 char uart_recv() {
@@ -50,12 +45,11 @@ char uart_recv() {
 }
 
 void uart_print(const char* str) {
-    while(*str) {
-        if (*str == '\n') {
+    char c;
+    for (u32 i = 0; (c = str[i]); i++) {
+        if (c == '\n') {
             uart_send('\r');
         }
-
-        uart_send(*str);
-        str++;
+        uart_send(c);
     }
 }
