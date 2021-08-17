@@ -14,7 +14,7 @@ _start:
     sub r1, r1, r0
     bl memzero
 
-    /* setup stack pointer, go to kernel_main */
+    /* go to kernel_main */
     bl kernel_main
 proc_hang:
     /* do nothing */

@@ -2,7 +2,8 @@ BOOTMNT ?= /media/parallels/boot
 
 CC = gcc
 COPS = -Wall -Werror -O1 -nostdlib -nostartfiles -ffreestanding -Iinclude \
-		 -marm -mcpu=arm1176jzf-s
+		 -marm \
+		 -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
 
 AOPS = -Iinclude --warn --fatal-warnings
 
