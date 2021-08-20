@@ -1,7 +1,7 @@
 .arm
 .text
 
-.global strcpy
+.globl strcpy
 strcpy: @ r0: dest pointer, r1: src pointer
     ldrb r2, [r1], #1 @ load from src, increment pointer
 
@@ -11,7 +11,7 @@ strcpy: @ r0: dest pointer, r1: src pointer
     strb r2, [r0], #1 @ store in dest, increment pointer
     b strcpy @ loop
 
-.global strcat
+.globl strcat
 strcat: @ r0: dest ptr, r1: src ptr
     push {lr}
     push {r0, r1}
@@ -22,7 +22,7 @@ strcat: @ r0: dest ptr, r1: src ptr
     bl strcpy @ perform concatenation by executing strcpy
     pop {pc}
 
-.global strlen
+.globl strlen
 strlen: @ r0: string pointer
     mov r1, r0 @ copy start point
 strlen_loop:

@@ -1,6 +1,7 @@
 #include "gpio.h"
 #include "utils.h"
 #include "peripherals/auxiliary.h"
+#include "convert.h"
 #include "mini_uart.h"
 
 #define TXD 14
@@ -22,6 +23,8 @@ void uart_init() {
     AUX_REGS->mu_baud_rate = 270; // = 115200 @ 250 Mhz
 
     AUX_REGS->mu_control = 3;
+
+    delay(2000);
 
     uart_send('\n');
     uart_send('\n');
@@ -51,4 +54,10 @@ void uart_print(const char* str) {
     for (u32 i = 0; (c = str[i]); i++) {
         uart_send(c);
     }
+}
+
+static char* uart_print_hex_buff = "0x00000000";
+void uart_print_hex(u32 val) {
+    u32_to_hex(uart_print_hex_buff + 2, val);
+    uart_print(uart_print_hex_buff);
 }

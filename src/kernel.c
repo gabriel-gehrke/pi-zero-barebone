@@ -9,10 +9,12 @@ void kernel_main() {
     // delay some cycles
     delay(1000);
 
-    uart_print("Raspberry Pi Zero Bare Metal OS Initializing...\n\0");
+    uart_print("\nRaspberry Pi Zero Bare Metal OS Initializing...\n\0");
     uart_print("\n\nDone!\n\0");
 
     while (1) {
-        uart_send(uart_recv());
+        char c = uart_recv();
+        uart_print_hex(c);
+        uart_send('\n');
     }
 }
