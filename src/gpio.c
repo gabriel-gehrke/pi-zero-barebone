@@ -1,5 +1,5 @@
 #include "gpio.h"
-#include "utils.h"
+#include "system.h"
 
 void gpio_pin_set_func(u8 pin, GpioFunc func) {
     // math magic from tutorial

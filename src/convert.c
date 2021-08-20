@@ -1,6 +1,5 @@
 #include "common.h"
-
-//static const char* hex_alphabet = "0123456789ABCDEF";
+#include "intmath.h"
 
 char* u32_to_hex(char* buff, u32 value) {
 
@@ -33,21 +32,20 @@ char* u32_to_bin(char* buff, u32 value) {
 
 char* u32_to_dec(char* buff, u32 value) {
     
-    /*
-    u32 digits = 0;
-    u32 copy = value;
-
-    if (value == 0) {
-        digits = 0;
-    } else {
-        while (copy > 0) {
-            digits++;
-            copy /= 10;
-        }
+    for (int i = ulog10(value); i >= 0; i--) {
+        char c = (value % 10) + '0';
+        buff[i] = c;
+        value /= 10;
     }
-    */
 
     return buff;
+}
 
-    
+char* i32_to_dec(char* buff, i32 value) {
+    if (value < 0) {
+        value = -value;
+        *buff = '-';
+        buff++;
+    }
+    return u32_to_dec(buff, (u32)value);
 }
