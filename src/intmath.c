@@ -15,7 +15,6 @@ u32 max(u32 a, u32 b) {
     return a > b ? a : b;
 }
 
-
 u32 abs(i32 v) {
     return v < 0 ? -v : v;
 }

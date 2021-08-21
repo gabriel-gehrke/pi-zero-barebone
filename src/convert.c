@@ -49,3 +49,34 @@ char* i32_to_dec(char* buff, i32 value) {
     }
     return u32_to_dec(buff, (u32)value);
 }
+
+static const char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+char* chars_to_base64(char* dest, const char* src, u32 src_len) {
+
+    for ( ; src_len >= 3; src_len -= 3) {
+
+        // inspired by https://fm4dd.com/programming/base64/base64_algorithm.shtm
+
+        u32 a = (src[0] & 0b11111100) >> 2; // get first 6 bits
+        u32 b = ((src[0] & 0b00000011) << 4) | ((src[1] & 0b11110000) >> 4); // get second 6 bits
+        u32 c = ((src[1] & 0b00001111) << 2) | ((src[2] & 0b11000000) >> 6); // get third 6 bits
+        u32 d = (src[2] & 0b00111111); // get last 6 bits
+
+        src += 3;
+
+        dest[0] = b64[a];
+        dest[1] = b64[b];
+        dest[2] = b64[c];
+        dest[3] = b64[d];
+
+        dest += 4;
+
+    }
+
+    // 1 or 2 bytes might need to be added for padding
+    for ( ; src_len > 0; src_len--) {
+        *dest++ = '=';
+    }
+
+    return dest;
+}
