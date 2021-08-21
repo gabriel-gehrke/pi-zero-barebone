@@ -73,9 +73,22 @@ char* chars_to_base64(char* dest, const char* src, u32 src_len) {
 
     }
 
-    // 1 or 2 bytes might need to be added for padding
-    for ( ; src_len > 0; src_len--) {
-        *dest++ = '=';
+    // 1 or 2 bytes might remain
+    if (src_len > 0) {
+        *dest++ = (src[0] & 0b11111100) >> 2;
+
+        switch (src_len) {
+            case 1:
+                *dest++ = b64[(src[0] & 0b00000011) << 4];
+                *dest++ = '=';
+                *dest++ = '=';
+                break;
+            case 2:
+                *dest++ = b64[((src[0] & 0b00000011) << 4) | ((src[1] & 0b11110000) >> 4)];
+                *dest++ = b64[(src[1] & 0b00001111) << 2];
+                *dest++ = '=';
+                break;
+        }
     }
 
     return dest;

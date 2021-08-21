@@ -8,4 +8,4 @@ void strcpy(char* dest, char* src);
 void strcat(char* dest, char* src);
 
 // calculates the length of the given string
-u32 strlen(char* str);
+u32 strlen(const char* str);

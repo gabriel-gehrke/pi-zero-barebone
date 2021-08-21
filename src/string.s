@@ -32,6 +32,6 @@ strlen_loop:
     subeq r0, r1, r0  @ if yes, calculate string length and return
     bxeq lr
 
-    add r2, r2, #1 @ increment pointer
+    add r0, r0, #1 @ increment pointer
     b strlen_loop
     
