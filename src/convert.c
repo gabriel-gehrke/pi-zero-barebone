@@ -54,41 +54,40 @@ static const char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0
 char* chars_to_base64(char* dest, const char* src, u32 src_len) {
 
     for ( ; src_len >= 3; src_len -= 3) {
+        /*
+            3 bytes get converted into 4 bytes:
+            - 3 bytes are 24 bits
+            - divide 24 bits into 4x6 bits
+            - get corresponding char from base64 lookup array
+        */
 
-        // inspired by https://fm4dd.com/programming/base64/base64_algorithm.shtm
+        char a = *src++;
+        char b = *src++;
+        char c = *src++;
 
-        u32 a = (src[0] & 0b11111100) >> 2; // get first 6 bits
-        u32 b = ((src[0] & 0b00000011) << 4) | ((src[1] & 0b11110000) >> 4); // get second 6 bits
-        u32 c = ((src[1] & 0b00001111) << 2) | ((src[2] & 0b11000000) >> 6); // get third 6 bits
-        u32 d = (src[2] & 0b00111111); // get last 6 bits
-
-        src += 3;
-
-        dest[0] = b64[a];
-        dest[1] = b64[b];
-        dest[2] = b64[c];
-        dest[3] = b64[d];
-
-        dest += 4;
+        *dest++ = b64[(a & 0b11111100) >> 2]; // get first 6 bits
+        *dest++ = b64[((a & 0b00000011) << 4) | ((b & 0b11110000) >> 4)]; // get second 6 bits
+        *dest++ = b64[((b & 0b00001111) << 2) | ((c & 0b11000000) >> 6)]; // get third 6 bits
+        *dest++ = b64[(c & 0b00111111)]; // get last 6 bits
 
     }
 
     // 1 or 2 bytes might remain
     if (src_len > 0) {
-        *dest++ = (src[0] & 0b11111100) >> 2;
+        dest[0] = b64[(src[0] & 0b11111100) >> 2];
+        dest[3] = '=';
 
-        switch (src_len) {
-            case 1:
-                *dest++ = b64[(src[0] & 0b00000011) << 4];
-                *dest++ = '=';
-                *dest++ = '=';
-                break;
-            case 2:
-                *dest++ = b64[((src[0] & 0b00000011) << 4) | ((src[1] & 0b11110000) >> 4)];
-                *dest++ = b64[(src[1] & 0b00001111) << 2];
-                *dest++ = '=';
-                break;
+        if (src_len == 1) {
+            // 1 byte remained
+            dest[1] = b64[(src[0] & 0b00000011) << 4];
+            dest[2] = '=';
+        } else {
+            // 2 bytes remained
+            dest[1] = b64[((src[0] & 0b00000011) << 4) | ((src[1] & 0b11110000) >> 4)];
+            dest[2] = b64[(src[1] & 0b00001111) << 2];
         }
+
+        dest += 4;
     }
 
     return dest;
