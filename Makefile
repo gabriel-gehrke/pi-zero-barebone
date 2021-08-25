@@ -1,6 +1,21 @@
 BOOTMNT ?= /media/parallels/boot
 
-CC = gcc
+ARCH = $(shell uname -p)
+
+ifeq ($(ARCH), armhf)
+	CC = gcc
+	AS = as
+	LD = ld
+	OBJCPY = objcopy
+	OBJDUMP = objdump
+else
+	CC = arm-linux-gnueabihf-gcc
+	AS = arm-linux-gnueabihf-as
+	LD = arm-linux-gnueabihf-ld
+	OBJCPY = arm-linux-gnueabihf-objcopy
+	OBJDUMP = arm-linux-gnueabihf-objdump
+endif
+
 COPS = -Wall -Werror -O2 -nostdlib -nostartfiles -ffreestanding -Iinclude \
 		 -marm -mgeneral-regs-only \
 		 -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
@@ -25,7 +40,7 @@ $(BUILD_DIR)/%_S.o: $(SRC_DIR)/%.S
 
 $(BUILD_DIR)/%_s.o: $(SRC_DIR)/%.s
 	mkdir -p $(@D)
-	as $(AOPS) -MMD -c $< -o $@
+	$(AS) $(AOPS) -MMD -c $< -o $@
 
 C_FILES = $(wildcard $(SRC_DIR)/*.c)
 ASM_FILES = $(wildcard $(SRC_DIR)/*.s)
@@ -40,9 +55,10 @@ DEP_FILES = $(OBJ_FILES:%.o=%.d)
 
 kernel.elf: $(SRC_DIR)/linker.ld $(OBJ_FILES)
 	@echo "Building kernel.elf..."
-	ld -T $(SRC_DIR)/linker.ld -o $(BUILD_DIR)/kernel.elf $(OBJ_FILES)
+	$(LD) -T $(SRC_DIR)/linker.ld -o $(BUILD_DIR)/kernel.elf $(OBJ_FILES)
 
 kernel.img: kernel.elf
 	@echo "Exporting image..."
-	objcopy $(BUILD_DIR)/kernel.elf -O binary $(BUILD_DIR)/kernel.img
+	$(OBJDUMP) $(BUILD_DIR)/kernel.elf -D > $(BUILD_DIR)/kernel.dump
+	$(OBJCPY) $(BUILD_DIR)/kernel.elf -O binary $(BUILD_DIR)/kernel.img
 	sync
