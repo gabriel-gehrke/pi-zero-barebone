@@ -26,6 +26,10 @@ void kernel_main() {
     uart_print(buff);
     uart_send('\n');
 
+    if (streql(buff, "ABcDeFg")) {
+        uart_print("Die Strings waren gleich!");
+    }
+
 
     while (1) {
         char c = uart_recv();

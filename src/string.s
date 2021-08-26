@@ -34,4 +34,33 @@ strlen_loop:
 
     add r0, r0, #1 @ increment pointer
     b strlen_loop
+
+.globl strcmp
+strcmp: @ r0: first string, r1: second string
+
+    @ load 2 bytes
+    ldrb r2, [r0], #1
+    ldrb r3, [r1], #1
+
+    @ first string terminated
+    cmp r2, #0
+    subeq r0, r2, r3 @ return negative value if r2 < r3, return 0 if r2 == r3
+    bxeq lr
+
+    @ second string terminated, first one did not
+    cmp r3, #0
+    moveq r0, r2 @ return positive value if r2 > 0, return 0 otherwise
+    bxeq lr
+
+    @ both strings are not 0, but are still equal (loop)
+    subs r2, r2, r3
+    beq strcmp
+
+    @ the strings are different
+    mov r0, r2 @ use result from subtraction in prior step
+    bx lr
+
+
+
+
     
