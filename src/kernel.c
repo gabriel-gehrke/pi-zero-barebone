@@ -3,7 +3,7 @@
 #include "system.h"
 #include "stdio.h"
 #include "string.h"
-#include "convert.h"
+#include "base64.h"
 
 static const char* b64_test_string = "Hello World!";
 
@@ -21,7 +21,7 @@ void kernel_main() {
     uart_printf("\"%s\" ist %u Zeichen lang!\n", b64_test_string, len);
 
     char buff[len + (len / 3) + 1];
-    *chars_to_base64(buff, b64_test_string, len) = '\0';
+    *base64_encode(buff, b64_test_string, len) = '\0';
 
     uart_print(buff);
     uart_send('\n');

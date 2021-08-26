@@ -8,6 +8,3 @@ char* u32_to_bin(char* buff, u32 value);
 
 char* u32_to_dec(char* buff, u32 value);
 char* i32_to_dec(char* buff, i32 value);
-
-
-char* chars_to_base64(char* dest, const char* src, u32 src_len);
