@@ -4,8 +4,9 @@
 #include <stdbool.h>
 #include "common.h"
 
-#define MUTEX_INIT (bool)1
-#define SEMAPHORE_INIT(x) (i32)x
+#define MUTEX_INIT 0
+#define SEMAPHORE_INIT(x) x
+#define SEMAPHORE_COUNTDOWNLATCH_INIT(x) -x + 1
 
 /*
  * A mutex acts as a lock, which can be used to synchronize threads/processes.
@@ -16,10 +17,12 @@
  */
 typedef volatile bool mutex;
 
-// Used to lock a mutex. If the mutex is already locked, this method will block until the mutex becomes unlocked and locks it automatically. 
+// Used to lock a mutex. If the mutex is already locked, this method will block until the mutex becomes unlocked. It then locks the mutex automatically. 
 void mutex_lock(mutex* m);
 // Used to unlock a mutex. If the mutex isn't locked, nothing happens.
 void mutex_unlock(mutex* m);
+// "tries" to lock the mutex, once. This method returns true if the try was a success and the mutex got locked. Otherwise, false gets retuned.
+bool mutex_trylock(mutex* m);
 
 /*
  * A semaphore acts as a boundary, which can be used to synchronize access to certain features/resources.
@@ -34,6 +37,9 @@ void mutex_unlock(mutex* m);
  */
 typedef volatile i32 semaphore;
 
+// increments the semaphore's value atomically by one.
 void semaphore_inc(semaphore* s);
+// decrement's the semaphore's value atomically by one. If the resulting value would be negative, the method blocks until the semaphore's value is at least one.
 void semaphore_dec(semaphore* s);
+// reads the semaphore's value
 i32 semaphore_val(semaphore* s);

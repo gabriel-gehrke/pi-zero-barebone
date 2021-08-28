@@ -1,8 +1,8 @@
 BOOTMNT ?= /media/parallels/boot
 
-ARCH = $(shell uname -p)
+ARCH = $(shell uname -p | head -c 3)
 
-ifeq ($(ARCH), armhf)
+ifeq ($(ARCH), arm)
 	CC = gcc
 	AS = as
 	LD = ld
