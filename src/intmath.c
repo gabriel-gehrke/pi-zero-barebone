@@ -45,11 +45,11 @@ void udiv(u32 dividend, u32 divisor, u32* result, u32* modulo) {
     
     // count how many times divisor fits into dividend
     u32 res = 0;
-    while (divisor < dividend) {
+    while (dividend >= divisor) {
         dividend -= divisor;
         res++;
     }
 
-    *result = res;
-    *modulo = divisor - dividend;
+    *result = res; // store result (# times divisor fit in dividend)
+    *modulo = dividend; // store the rest
 }
