@@ -3,7 +3,6 @@
 #include "system.h"
 #include "stdio.h"
 #include "string.h"
-#include "base64.h"
 
 static void initialize_os();
 

@@ -9,3 +9,5 @@ i32 max(i32 a, i32 b);
 
 u32 abs(i32 v);
 u32 ulog10(u32 v);
+
+void udiv(u32 dividend, u32 divisor, u32* result, u32* modulo);
