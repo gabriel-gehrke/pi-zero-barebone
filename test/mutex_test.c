@@ -8,9 +8,15 @@
 #define ARR_SIZE 100
 #define THREADS 8
 #define ARR_ACCESSES 1000000
+#define COUNT_ITERATIONS 1000000
 
 static void* modify_array(void* args);
 static void* modify_array_synced(void* args);
+
+static void* counter_unsynced(void* args);
+static void* counter_synced(void* args);
+static volatile u32 counter;
+static mutex count_lock = MUTEX_INIT;
 
 static void arr_check_integrity();
 static void arr_init();
@@ -23,6 +29,9 @@ static mutex arrlock = MUTEX_INIT;
 
 
 int main() {
+    
+    /* ARRAY TEST */
+    
     // no synchronization
     printf("Accessing the Array without synchronization (%d accesses):\n\n", ARR_ACCESSES);
     arr_init();
@@ -36,6 +45,18 @@ int main() {
     launch_threads(modify_array_synced);
     arr_check_integrity();
     printf("\n\n");
+
+    /* COUNTER TEST */
+    u32 total_count = THREADS * COUNT_ITERATIONS;
+    printf("Counting to %u without synchronization...\n", total_count);
+    counter = 0;
+    launch_threads(counter_unsynced);
+    printf("Result: %u\n\n", counter);
+
+    printf("Counting to %u WITH synchronization...\n", total_count);
+    counter = 0;
+    launch_threads(counter_synced);
+    printf("Result: %u\n", counter);
 
 }
 
@@ -71,7 +92,7 @@ void launch_threads(void* (*f) (void*)) {
     pthread_attr_setdetachstate(&config, PTHREAD_CREATE_DETACHED);
     for (int i = 0; i < THREADS; i++) {
         pthread_t pid;
-        pthread_create(&pid, NULL, f, NULL);
+        pthread_create(&pid, &config, f, NULL);
     }
 
     // wait for all threads
@@ -118,5 +139,21 @@ void* modify_array_synced(void* args) {
 
     printf("thread done... (s: %d)\n", sem);
     semaphore_inc(&sem);    
+}
+
+void* counter_unsynced(void* args) {
+    for (u32 i = 0; i < COUNT_ITERATIONS; i++) {
+        counter = counter + 1;
+    }
+    semaphore_inc(&sem);
+}
+
+void* counter_synced(void* args) {
+    for (u32 i = 0; i < COUNT_ITERATIONS; i++) {
+        mutex_lock(&count_lock);
+        counter++;
+        mutex_unlock(&count_lock);
+    }
+    semaphore_inc(&sem);
 }
 

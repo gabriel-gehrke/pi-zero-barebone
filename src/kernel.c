@@ -5,35 +5,30 @@
 #include "string.h"
 #include "base64.h"
 
-static const char* b64_test_string = "Hello World!";
+static void initialize_os();
 
 void kernel_main() {
     
+    initialize_os();
+    uart_print("\nWelcome to the Raspberry Pi Zero Bare Metal OS created by Gabriel Gehrke!\n\n");
+
+    while (1) {
+        uart_send(uart_recv());
+        uart_send('\n');
+    }
+}
+
+void initialize_os() {
+    // initialize the uart interface for communication
     uart_init();
 
     // delay some cycles
-    delay(1000);
+    sys_delay(10000);
 
-    uart_print("\nRaspberry Pi Zero Bare Metal OS Initializing...\n\0");
-    uart_print("\n\nDone!\n\0");
-
-    u32 len = 12;
-    uart_printf("\"%s\" ist %u Zeichen lang!\n", b64_test_string, len);
-
-    char buff[len + (len / 3) + 1];
-    *base64_encode(buff, b64_test_string, len) = '\0';
-
-    uart_print(buff);
-    uart_send('\n');
-
-    if (streql(buff, "ABcDeFg")) {
-        uart_print("Die Strings waren gleich!");
-    }
+    // fetch boot mode
+    u32 mode = sys_getmode();
+    uart_printf("Booted mode: %b\n", mode);
 
 
-    while (1) {
-        char c = uart_recv();
-        uart_print_hex(c);
-        uart_send('\n');
-    }
+
 }
