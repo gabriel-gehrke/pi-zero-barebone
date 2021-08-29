@@ -1,23 +1,5 @@
 #include "common.h"
-
-u32 umin(u32 a, u32 b) {
-    return a < b ? a : b;
-}
-u32 umax(u32 a, u32 b) {
-    return a > b ? a : b;
-}
-
-
-u32 min(u32 a, u32 b) {
-    return a < b ? a : b;
-}
-u32 max(u32 a, u32 b) {
-    return a > b ? a : b;
-}
-
-u32 abs(i32 v) {
-    return v < 0 ? -v : v;
-}
+#include "intmath.h"
 
 
 u32 ulog10(u32 v) {
@@ -28,19 +10,27 @@ u32 ulog10(u32 v) {
 }
 
 
-void udiv(u32 dividend, u32 divisor, u32* result, u32* modulo) {
+u32 umod(u32 val, u32 mod) {
+    /* because of gcc's optimization features, this method gets optimized to a shorter length than udiv */
+    u32 ignore = 0; // ignore, we do not need the division's result
+    u32 remainder = 0; // we only need the remainder
+    udiv(val, mod, &ignore, &remainder);
+    return remainder;
+}
+
+void udiv(u32 dividend, u32 divisor, u32* result, u32* remainder) {
 
     if (divisor == 0) return;
     if (divisor == 1) {
         *result = dividend;
-        *modulo = 0;
+        *remainder = 0;
         return;
     }
 
     // short with 2 as long as possible
     while (dividend % 2 == 0 && divisor % 2 == 0) {
-        dividend = dividend >> 1;
-        divisor = divisor >> 1;
+        dividend >>= 1;
+        divisor >>= 1;
     }
     
     // count how many times divisor fits into dividend
@@ -51,5 +41,5 @@ void udiv(u32 dividend, u32 divisor, u32* result, u32* modulo) {
     }
 
     *result = res; // store result (# times divisor fit in dividend)
-    *modulo = dividend; // store the rest
+    *remainder = dividend; // store the rest
 }
