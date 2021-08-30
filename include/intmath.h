@@ -18,7 +18,7 @@ static inline i32 max(i32 a, i32 b) {
     return MAX(a, b);
 }
 
-static inline u32 abs(i32 v) {
+static inline u32 iabs(i32 v) {
     return v < 0 ? -v : v;
 }
 

@@ -1,5 +1,5 @@
-#include "common.h"
-#include "intmath.h"
+#include "../include/common.h"
+#include "../include/intmath.h"
 
 
 u32 ulog10(u32 v) {
@@ -26,18 +26,32 @@ void udiv(u32 dividend, u32 divisor, u32* result, u32* remainder) {
         *remainder = 0;
         return;
     }
-
-    // short with 2 as long as possible
-    while (dividend % 2 == 0 && divisor % 2 == 0) {
-        dividend >>= 1;
-        divisor >>= 1;
-    }
     
-    // count how many times divisor fits into dividend
+    /*
+     * Division ALgorithm:
+     *
+     * Count, how many times DIVISOR fits into DIVIDEND.
+     * To optimize this process, DIVISOR gets copied and multiplied by 2 until it is bigger than DIVIDEND.
+     * 
+     * Then that DIVISOR gets subtracted from DIVIDEND.
+     * 
+     * This process repeats until DIVISOR is bigger than DIVIDEND.
+     *
+     */
     u32 res = 0;
     while (dividend >= divisor) {
-        dividend -= divisor;
-        res++;
+        u32 div = divisor; // copy divisor
+        u32 q = 1; // temporarily store quotient
+
+        // multiply div by 2, until bigger than dividend
+        while (dividend >= div)
+        {
+            div <<= 1;
+            q <<= 1;
+        }
+        
+        dividend -= (div >> 1); // decrement dividend
+        res += (q >> 1); // add quotient to result
     }
 
     *result = res; // store result (# times divisor fit in dividend)
