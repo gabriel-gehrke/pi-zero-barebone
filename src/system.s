@@ -36,6 +36,7 @@ sys_getmode:
 .globl sys_setmode
 sys_setmode:
     mrs r1, CPSR @ copy current cpsr into r1
+    and r0, r0, #0b11111 @ select relevant bits
     bic r1, r1, #0b11111 @ clear mode bits (0-4)
     orr r0, r1, r0 @ set mode bits
     msr CPSR, r0

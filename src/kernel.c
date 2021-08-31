@@ -26,8 +26,6 @@ void initialize_os() {
 
     // fetch boot mode
     u32 mode = sys_getmode();
-    uart_printf("Booted mode: %b\n", mode);
-
-
+    uart_printf("Booted mode:\n%b\n%x\n", mode, mode);
 
 }

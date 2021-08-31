@@ -70,7 +70,7 @@ void uart_printf(const char* fmt, ...)
         // check for percent sign
         if (*fmt == '%') {
 
-            char buff[16]; // allocate temporary buffer for string building (4 words big)
+            char buff[64]; // allocate temporary buffer for string building
             memzero(buff, sizeof(buff));
 
             // switch format character
@@ -96,8 +96,9 @@ void uart_printf(const char* fmt, ...)
                 case('b'):
                     buff[0] = '0';
                     buff[1] = 'b';
-                    u32_to_bin(buff, va_arg(args, u32));
+                    u32_to_bin(buff + 2, va_arg(args, u32));
                     uart_printf(buff);
+                    break;
                 default:
                     // send percent, format character was not recognized
                     uart_send('%');
@@ -112,6 +113,6 @@ void uart_printf(const char* fmt, ...)
             uart_send(*fmt);
         }
     }
- 
+
     va_end(args);
 }
